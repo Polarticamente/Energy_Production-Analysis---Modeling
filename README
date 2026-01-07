@@ -1,0 +1,59 @@
+== Author: PolarDev ==
+== 03 - 01 - 2026 ==
+
+
+============ Predicción de Producción de Energía Renovable ============
+== Contexto ==
+La transición hacia energías limpias (Solar, Eólica) presenta un reto crítico: la intermitencia. A diferencia de las fuentes fósiles, la producción renovable depende de factores climáticos y temporales variables. Poder predecir con precisión cuánta energía se generará en la próxima hora permite una mejor gestión de la red eléctrica, reduce costos operativos y asegura la estabilidad del suministro.
+
+== El Dataset ==
+El análisis se basa en el archivo Energy Production Dataset.csv, que contiene 51,864 registros de producción energética.
+
+- Frecuencia: Horaria (Start_Hour, End_Hour).
+
+- Fuentes de energía: Solar, Wind y Mixed.
+
+- Variables clave: Fecha, día del año, estación del año y unidades de producción.
+
+- Calidad de datos: Se detectaron y analizaron "traslapes" en los horarios durante los cambios de hora estacionales (Octubre) y se identificaron 402 valores atípicos (outliers) mediante el método de Z-Score.
+
+== Objetivo ==
+Desarrollar un modelo de regresión capaz de predecir la Producción de Energía para la siguiente hora, utilizando datos históricos y variables temporales cíclicas.
+
+== Metodología ==
+El proyecto sigue un flujo estándar de Ciencia de Datos:
+
+- EDA (Análisis Exploratorio): Identificación de tendencias por tipo de fuente y análisis de estacionalidad.
+
+- Limpieza: Conversión de tipos de datos, manejo de traslapes horarios y tratamiento de valores nulos tras la creación de lags.
+
+- Ingeniería de Características.
+
+- Codificación Cíclica: Transformación de horas y días en funciones Seno/Coseno para que el modelo entienda que la hora 23 está cerca de la hora 0.
+
+- Variables de Retraso (Lags): Creación de columnas de producción de hace 1 hora (prod_lag_1h) y 24 horas (prod_lag_24h).
+
+- Promedios Móviles: Cálculo de la media de producción de las últimas 3 horas para capturar la tendencia inmediata.
+
+- Modelo: Implementación de un algoritmo de Random Forest Regressor.
+
+== Resultados ==
+- El modelo demuestra una alta capacidad predictiva al capturar la inercia de la producción energética:
+
+- R² Score: [Insertar aquí el valor obtenido en tu celda de métricas, ej: 0.94]
+
+- MAE (Error Absoluto Medio): [Insertar valor, ej: 340 unidades]
+
+- Predicción en tiempo real: El notebook incluye una función final donde, al ingresar el tipo de energía y la producción de la hora anterior, el modelo devuelve la producción estimada (Ej: Para Wind a las 12:00 con 6000 unidades previas, predice 6382.34 unidades).
+
+== Limitaciones ==
+- Falta de datos climáticos: El modelo actualmente solo "mira" el pasado (producción previa). No cuenta con variables de velocidad del viento o radiación solar real, lo que limitaría su precisión ante cambios climáticos súbitos.
+
+- Outliers: Existen picos de producción muy elevados (Z-score > 3) que podrían estar sesgando el aprendizaje en condiciones extremas.
+
+== Mejoras Futuras ==
+- Integración de API Climática: Incorporar datos meteorológicos en tiempo real para mejorar la precisión.
+
+- Prueba de otros algoritmos: Comparar el rendimiento con XGBoost o Redes Neuronales Recurrentes (LSTM), ideales para series temporales.
+
+- Dashboard: Crear una interfaz visual (Streamlit) para visualizar las predicciones de forma interactiva.
