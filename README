@@ -1,59 +1,64 @@
-== Author: PolarDev ==
+== Author: PolarDev == 
 == 03 - 01 - 2026 ==
 
+============ Renewable Energy Production Prediction ============ 
+== Context == 
+The main challenge in the transition to clean energies—among them the most famous, solar and wind—presents a hurdle: intermittency. 
+Unlike fossil sources, renewable production depends on climatic factors that tend to be temporal variables. 
+Being able to accurately predict how much energy will be produced per hour allows for cost reduction and improved energy efficiency for cities based on their consumption.
 
-============ Predicción de Producción de Energía Renovable ============
-== Contexto ==
-La transición hacia energías limpias (Solar, Eólica) presenta un reto crítico: la intermitencia. A diferencia de las fuentes fósiles, la producción renovable depende de factores climáticos y temporales variables. Poder predecir con precisión cuánta energía se generará en la próxima hora permite una mejor gestión de la red eléctrica, reduce costos operativos y asegura la estabilidad del suministro.
+== Dataset == 
+The analysis is based on the file Energy Production Dataset.csv, which contains 51,864 energy production records.
 
-== El Dataset ==
-El análisis se basa en el archivo Energy Production Dataset.csv, que contiene 51,864 registros de producción energética.
+- Frequency: Production is recorded hourly (Start_Hour, End_Hour).
 
-- Frecuencia: Horaria (Start_Hour, End_Hour).
+- Energy Sources: Solar, Wind, and Mixed.
 
-- Fuentes de energía: Solar, Wind y Mixed.
+- Key Variables: Date, day of the year, season, and production units.
 
-- Variables clave: Fecha, día del año, estación del año y unidades de producción.
+- Data Quality: Overlaps in schedules during seasonal time changes were detected and analyzed, and 402 outliers were identified—likely the result of storms or acyclic weather changes—using the Z-Score method.
 
-- Calidad de datos: Se detectaron y analizaron "traslapes" en los horarios durante los cambios de hora estacionales (Octubre) y se identificaron 402 valores atípicos (outliers) mediante el método de Z-Score.
+== Objective == 
+Develop a regression model capable of predicting Energy Production for the next hour, using historical data and cyclical temporal variables.
 
-== Objetivo ==
-Desarrollar un modelo de regresión capaz de predecir la Producción de Energía para la siguiente hora, utilizando datos históricos y variables temporales cíclicas.
+== Methodology == 
+- The project follows a standard Data Science workflow:
 
-== Metodología ==
-El proyecto sigue un flujo estándar de Ciencia de Datos:
+- Exploratory Analysis: Identification of trends by source type and analysis of each season.
 
-- EDA (Análisis Exploratorio): Identificación de tendencias por tipo de fuente y análisis de estacionalidad.
+- Cleaning: Data type conversion, handling of hourly overlaps, and management of null values after lag creation.
 
-- Limpieza: Conversión de tipos de datos, manejo de traslapes horarios y tratamiento de valores nulos tras la creación de lags.
+- Feature Engineering.
 
-- Ingeniería de Características.
+- Cyclical Encoding: Transformation of hours and days into Sine/Cosine functions for model training; this ensures the model understands that hour 0 and 23 are close.
 
-- Codificación Cíclica: Transformación de horas y días en funciones Seno/Coseno para que el modelo entienda que la hora 23 está cerca de la hora 0.
+- Lag Variables: Creation of production columns from 1 hour ago (prod_lag_1h) and 24 hours ago (prod_lag_24h).
 
-- Variables de Retraso (Lags): Creación de columnas de producción de hace 1 hora (prod_lag_1h) y 24 horas (prod_lag_24h).
+- Moving Averages: Calculation of the average production of the last 3 hours to capture the immediate trend.
 
-- Promedios Móviles: Cálculo de la media de producción de las últimas 3 horas para capturar la tendencia inmediata.
+Model: Implementation of a Random Forest Regressor algorithm.
 
-- Modelo: Implementación de un algoritmo de Random Forest Regressor.
+== Results ==
 
-== Resultados ==
-- El modelo demuestra una alta capacidad predictiva al capturar la inercia de la producción energética:
+- The model demonstrates a high predictive capacity by capturing the inertia of energy production:
 
-- R² Score: [Insertar aquí el valor obtenido en tu celda de métricas, ej: 0.94]
+- R² Score: 0.9807
 
-- MAE (Error Absoluto Medio): [Insertar valor, ej: 340 unidades]
+- Mean Absolute Error (MAE): 358.87 units.
 
-- Predicción en tiempo real: El notebook incluye una función final donde, al ingresar el tipo de energía y la producción de la hora anterior, el modelo devuelve la producción estimada (Ej: Para Wind a las 12:00 con 6000 unidades previas, predice 6382.34 unidades).
+- Real-time Prediction: The notebook includes a final function where, by entering the energy type and the previous hour's production, the model returns the estimated production (taking the MAE into account).
 
-== Limitaciones ==
-- Falta de datos climáticos: El modelo actualmente solo "mira" el pasado (producción previa). No cuenta con variables de velocidad del viento o radiación solar real, lo que limitaría su precisión ante cambios climáticos súbitos.
+== Limitations ==
 
-- Outliers: Existen picos de producción muy elevados (Z-score > 3) que podrían estar sesgando el aprendizaje en condiciones extremas.
+- Lack of Climatic Data: The model only considers past predictions; it lacks real-time data to predict sudden changes such as storms or increased solar radiation.
 
-== Mejoras Futuras ==
-- Integración de API Climática: Incorporar datos meteorológicos en tiempo real para mejorar la precisión.
+- Outliers: There are very high production peaks interpreted as storm days that generated peaks of 23,000 units produced; although these outliers were not taken into account for this analysis,
+they could slightly affect the model's training.
 
-- Prueba de otros algoritmos: Comparar el rendimiento con XGBoost o Redes Neuronales Recurrentes (LSTM), ideales para series temporales.
+- Analyst's Experience: One of my first freelance projects where the lack of experience could lead me to make some not-so-correct decisions; I don't rule out improving this work in the future ;)
 
-- Dashboard: Crear una interfaz visual (Streamlit) para visualizar las predicciones de forma interactiva.
+== Future Improvements ==
+
+- Climate API Integration: Incorporate real-time meteorological data to improve accuracy.
+
+- Dashboard: Create a visual interface (Streamlit) to visualize predictions interactively.
